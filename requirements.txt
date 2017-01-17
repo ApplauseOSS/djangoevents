@@ -1,0 +1,8 @@
+Django>=1.10,<1.11
+djangorestframework
+pytest-django
+pytest-watch
+ipython
+ipdb
+factory-boy==2.7.0
+eventsourcing==1.2.1

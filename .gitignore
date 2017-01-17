@@ -1,0 +1,9 @@
+venv
+dist
+.tox/
+*.sqlite3
+/.idea/
+.cache/
+__pycache__
+*.egg-info
+/.cache/
