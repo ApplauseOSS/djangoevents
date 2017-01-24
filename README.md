@@ -1,11 +1,11 @@
-# Welcome to django-eventsourcing's documentation!
-django-eventsourcing offers common components that are required for building Event Sourcing Django applications.
+# Welcome to djangoevents' documentation!
+djangoevents offers building blocks for building Event Sourcing Django applications.
 
 ## Setup
 Install with pip:
 
 ```
-pip install django-eventsourcing
+pip install djangoevents
 ```
 
 Include in settings.py:
@@ -18,7 +18,7 @@ INSTALLED_APPS = [
 ```
 
 ## Event Sourcing Components
-django-eventsourcing takes advantage of [eventsourcing](https://github.com/johnbywater/eventsourcing) library for handling event sourcing and replaces its storage backend with Django Model for seamless integration with Django.
+djangoevents takes advantage of [eventsourcing](https://github.com/johnbywater/eventsourcing) library for handling event sourcing and replaces its storage backend with Django Model for seamless integration with Django.
 
 ### BaseEntity
 BaseEntity is a wrapper over EventSourcedEntity from eventsourcing's EventSourcedEntity. It is used to define Aggregates, its domain events and how domain events apply changes to Aggregates in one place.

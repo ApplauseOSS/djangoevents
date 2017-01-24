@@ -1,6 +1,6 @@
-# Contributing to django-eventsourcing
+# Contributing to djangoevents
 
-Please help make django-eventsourcing better.
+Please help make djangoevents better.
 
 When contributing to this repository, please first discuss the change you wish to make via issue,
 email, or any other method with the owners of this repository before making a change. 
