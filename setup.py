@@ -2,10 +2,10 @@ from setuptools import setup
 
 setup(
     name='djangoevents',
-    version='0.9.2',
+    version='0.9.3',
     url='https://github.com/ApplauseOSS/djangoevents',
     license='MIT',
-    description='small library that connects Django and eventsourcing package',
+    description='Building blocks for building Event Sourcing Django applications.',
     author='Applause',
     author_email='eng@applause.com',
     zip_safe=False,
