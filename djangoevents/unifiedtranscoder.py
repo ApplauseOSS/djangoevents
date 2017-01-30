@@ -28,11 +28,12 @@ class UnifiedTranscoder(AbstractTranscoder):
         """
         assert isinstance(domain_event, DomainEvent)
 
-        event_data = domain_event.__dict__.copy()
-        event_data.pop('domain_event_id')
-        event_data.pop('entity_id')
-        event_data.pop('entity_version')
-        event_data.pop('metadata')
+        event_data = {key: value for key, value in domain_event.__dict__.items() if key not in {
+            'domain_event_id',
+            'entity_id',
+            'entity_version',
+            'metadata',
+        }}
 
         domain_event_class = type(domain_event)
 
