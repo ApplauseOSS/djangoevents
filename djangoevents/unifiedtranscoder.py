@@ -45,7 +45,7 @@ class UnifiedTranscoder(AbstractTranscoder):
             aggregate_type=self._get_aggregate_type(domain_event),
             aggregate_version=domain_event.entity_version,
             create_date=datetime.fromtimestamp(timestamp_from_uuid(domain_event.domain_event_id)),
-            metadata=self._json_encode(domain_event.metadata),
+            metadata=self._json_encode(getattr(domain_event, 'metadata', None)),
             module_name=domain_event_class.__module__,
             class_name=domain_event_class.__qualname__,
             # have to have stored_entity_id because of the lib
