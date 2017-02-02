@@ -15,6 +15,7 @@ Please note we have a code of conduct, please follow it in all your interactions
 4. Please add meaningful description for the proposed change/fix on the pull request description.
 5. Have at least one reviewer approve the pull request.
 6. You may request the repo maintainer to merge the pull request for you.
+7. Bugfixes should target master branch while new features should target devel branch.
 
 ## Code of Conduct
 
