@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/ApplauseOSS/djangoevents.svg?branch=master)](https://travis-ci.org/ApplauseOSS/djangoevents)
+
 # Welcome to djangoevents' documentation!
 djangoevents offers building blocks for building Event Sourcing Django applications.
 
