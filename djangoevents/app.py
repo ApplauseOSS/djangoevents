@@ -1,3 +1,5 @@
+import warnings
+
 from .repository import DjangoStoredEventRepository
 from .unifiedtranscoder import UnifiedTranscoder
 from django.core.serializers.json import DjangoJSONEncoder
@@ -23,10 +25,18 @@ class EventSourcingWithDjango(EventSourcingApplication):
     def create_transcoder(self, always_encrypt, cipher, json_decoder_cls, json_encoder_cls):
         return UnifiedTranscoder(json_encoder_cls=json_encoder_cls)
 
+    def get_repo_for_aggregate(self, aggregate_cls):
+        """
+        Returns EventSourcedRepository class for a given aggregate.
+        """
+        clsname = '%sRepository' % aggregate_cls.__name__
+        repo_cls = type(clsname, (EventSourcedRepository,), {'domain_class': aggregate_cls})
+        return repo_cls(event_store=self.event_store)
+
     def get_repo_for_entity(self, entity_cls):
         """
         Returns EventSourcedRepository class for given entity.
         """
-        clsname = '%sRepository' % entity_cls.__name__
-        repo_cls = type(clsname, (EventSourcedRepository,), {'domain_class': entity_cls})
-        return repo_cls(event_store=self.event_store)
+        msg = "`get_repo_for_entity` is depreciated. Please switch to: `get_repo_for_aggregate`"
+        warnings.warn(msg, DeprecationWarning)
+        return self.get_repo_for_aggregate(aggregate_cls=entity_cls)
