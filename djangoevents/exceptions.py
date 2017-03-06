@@ -4,3 +4,7 @@ class DjangoeventsError(Exception):
 
 class AlreadyExists(DjangoeventsError):
     pass
+
+
+class EventSchemaError(DjangoeventsError):
+    pass
