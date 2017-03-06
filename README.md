@@ -131,6 +131,31 @@ DJANGOEVENTS_CONFIG = {
 }
 
 ```
+Once this is enabled avro schema definition will be required for all events in the system.
+The only exception to this rule are events of abstract aggregates:
+
+```python
+from djangoevents import BaseAggregate, abstract
+
+@abstract
+class Animal(BaseAggregate):
+    class Created(BaseAggregate.Created):
+        def mutate_event(self, event, cls):
+            return cls(
+                entity_id=event.entity_id,
+                entity_version=event.entity_version,
+                domain_event_id=event.domain_event_id,
+                label=event.label,
+                done=False,
+            )
+
+class Dog(Animal):
+    pass
+
+```
+
+In the example above `Animal` was defined as an `abstract` aggregate. Its goal is to keep all common implementation in a single place
+for child classes. No event specification is required for `Animal.Created` abstract aggregates. It needs to be present for `Dog.Created` though.
 
 **It is expected that each service will fully document all events emitted through avro schema definitions**. Read more about [avro format specification](https://avro.apache.org/docs/1.7.7/spec.html).
 
@@ -146,6 +171,34 @@ $ tree project
 |----- aggregate_name_test_event1_v1.json
 |----- aggregate_name_test_event2_v1.json
 ...
+```
+
+```bash
+$ cat avro/aggragate_name/aggregate_name_test_event1_v1.json
+
+{
+  "name": "aggregate_name_test_event1",
+  "type": "record",
+  "doc": "Sample Event",
+  "fields": [
+    {
+      "name": "entity_id",
+      "type": "string",
+      "doc": "ID of a the asset."
+    },
+    {
+      "name": "entity_version",
+      "type": "long",
+      "doc": "Aggregate revision"
+    },
+    {
+      "name": "domain_event_id",
+      "type": "string",
+      "doc": "ID of the last modifying event"
+    },
+  ]
+}
+
 ```
 
 Once event schema validation is enabled for your services, following changes will apply:
