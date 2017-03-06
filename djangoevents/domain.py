@@ -4,6 +4,17 @@ from eventsourcing.domain.model.entity import DomainEvent
 from eventsourcing.domain.model.entity import EventSourcedEntity
 
 
+def abstract(cls):
+    """
+    Marks an aggregate class as abstract.
+
+    Abstract aggregate provides (similarly do Django's abstract Models) means to share implementation
+    details.
+    """
+    cls._abstract = True
+    return cls
+
+
 class BaseAggregate(EventSourcedEntity):
     """
     `EventSourcedEntity` with saner mutator routing & naming:
@@ -18,6 +29,12 @@ class BaseAggregate(EventSourcedEntity):
     >>>            instance.connect = True
     >>>            return instance
     """
+    _abstract = False
+
+    @classmethod
+    def is_abstract_class(cls):
+        return cls._abstract or cls is BaseAggregate
+
     @classmethod
     def mutate(cls, aggregate=None, event=None):
         if aggregate:
@@ -47,8 +64,12 @@ class BaseEntity(BaseAggregate):
 
     OBSOLETE! Interface kept for backward compatibility.
     """
+    @classmethod
+    def is_abstract_class(cls):
+        return super().is_abstract_class() or cls is BaseEntity
 
     @classmethod
     def mutate(cls, entity=None, event=None):
         warnings.warn("`BaseEntity` is depreciated. Please switch to: `BaseAggregate`", DeprecationWarning)
         return super().mutate(aggregate=entity, event=event)
+

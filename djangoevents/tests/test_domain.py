@@ -3,7 +3,7 @@ from ..domain import BaseEntity, DomainEvent
 import pytest
 
 
-class SampleEvent(BaseEntity):
+class SampleEntity(BaseEntity):
     class Created(BaseEntity.Created):
         def mutate_event(self, event, klass):
             return klass(entity_id=event.entity_id,
@@ -25,30 +25,31 @@ class SampleEvent(BaseEntity):
 
 
 def test_base_entity_calls_mutator():
-    create_event = SampleEvent.Created(entity_id=1)
-    entity = SampleEvent.mutate(event=create_event)
+    create_event = SampleEntity.Created(entity_id=1)
+    entity = SampleEntity.mutate(event=create_event)
 
-    close_event = SampleEvent.Updated(entity_id=entity.id, entity_version=entity.version)
-    entity = SampleEvent.mutate(event=close_event, entity=entity)
+    close_event = SampleEntity.Updated(entity_id=entity.id, entity_version=entity.version)
+    entity = SampleEntity.mutate(event=close_event, entity=entity)
     assert entity.is_dirty is True
 
-def test_base_entity_requires_mutator():
-    create_event = SampleEvent.Created(entity_id=1)
-    entity = SampleEvent.mutate(event=create_event)
 
-    close_event = SampleEvent.Closed(entity_id=entity.id, entity_version=entity.version)
+def test_base_entity_requires_mutator():
+    create_event = SampleEntity.Created(entity_id=1)
+    entity = SampleEntity.mutate(event=create_event)
+
+    close_event = SampleEntity.Closed(entity_id=entity.id, entity_version=entity.version)
 
     with pytest.raises(NotImplementedError):
-        SampleEvent.mutate(event=close_event, entity=entity)
+        SampleEntity.mutate(event=close_event, entity=entity)
 
 
 def test_create_for_event():
-    event = SampleEvent.Created(
+    event = SampleEntity.Created(
         entity_id='ENTITY_ID',
         domain_event_id='DOMAIN_EVENT_ID',
         entity_version=0,
     )
-    obj = SampleEvent.create_for_event(event)
+    obj = SampleEntity.create_for_event(event)
 
     assert obj.id == 'ENTITY_ID'
     assert obj.version == 0
