@@ -168,13 +168,13 @@ $ tree project
 |--- ..
 |-avro
 |--- aggragate_name/
-|----- aggregate_name_test_event1_v1.json
-|----- aggregate_name_test_event2_v1.json
+|----- v1_aggregate_name_test_event1.json
+|----- v1_aggregate_name_test_event2.json
 ...
 ```
 
 ```bash
-$ cat avro/aggragate_name/aggregate_name_test_event1_v1.json
+$ cat avro/aggragate_name/v1_aggregate_name_test_event1.json
 
 {
   "name": "aggregate_name_test_event1",
