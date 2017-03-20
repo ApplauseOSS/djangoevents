@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='djangoevents',
-    version='0.11.0',
+    version='0.12.0dev',
     url='https://github.com/ApplauseOSS/djangoevents',
     license='MIT',
     description='Building blocks for building Event Sourcing Django applications.',

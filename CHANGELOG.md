@@ -1,3 +1,12 @@
+0.12
+====
+
+- Changed way how event type string is computed. For example,
+  given User aggregate and Created event, now it would be "user_created"
+  (while in older versions that would be simply "Created" which sometimes
+  is not sufficient enough). Moreover it is now possible to override that
+  with `event_type` attribute set on an event class.
+
 0.9.4
 =====
 - Made `DomainEvent.metadata` optional during serialization ([PR #10](https://github.com/ApplauseOSS/djangoevents/pull/10)).
