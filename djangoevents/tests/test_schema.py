@@ -3,7 +3,11 @@ from djangoevents.exceptions import EventSchemaError
 
 import djangoevents.schema as schema
 import json
+import os
 import pytest
+import shutil
+import tempfile
+
 from djangoevents.domain import BaseAggregate
 from djangoevents.domain import DomainEvent
 from io import StringIO
@@ -86,6 +90,33 @@ def test_load_all_event_schemas_missing_specs(list_aggs):
 def test_valid_event_to_schema_path():
     avro_path = schema.event_to_schema_path(aggregate_cls=SampleEntity, event_cls=SampleEntity.Created)
     assert avro_path == "/path/to/proj/avro/sample_entity/v1_sample_entity_created.json"
+
+
+@override_settings(BASE_DIR='/path/to/proj/src/')
+def test_event_to_schema_path_chooses_file_with_the_highest_version():
+    try:
+        # make temporary directory structure
+        temp_dir = tempfile.mkdtemp()
+        entity_dir = os.path.join(temp_dir, 'sample_entity')
+        os.mkdir(entity_dir)
+
+        for version in range(1, 4):
+            # make empty schema file
+            expected_schema_path = os.path.join(entity_dir, 'v{}_sample_entity_created.json'.format(version))
+            with open(expected_schema_path, 'w'):
+                pass
+
+            # mock avro dir
+            schema_path = schema.event_to_schema_path(
+                aggregate_cls=SampleEntity,
+                event_cls=SampleEntity.Created,
+                avro_dir=temp_dir,
+            )
+
+            assert schema_path == expected_schema_path
+    finally:
+        # remove temporary directory
+        shutil.rmtree(temp_dir)
 
 
 def test_parse_invalid_event_schema():

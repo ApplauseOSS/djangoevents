@@ -1,3 +1,9 @@
+dev
+===
+
+- Started automatically choosing Avro schemas with the highest version (based on file names on disk).
+
+
 0.12
 ====
 

@@ -3,6 +3,7 @@ Aggregate event avro schema validation
 """
 
 import avro.schema
+import itertools
 import os
 import stringcase
 
@@ -50,20 +51,50 @@ def load_event_schema(aggregate, event):
         raise EventSchemaError(msg.format(event=event, path=spec_path)) from e
 
 
-def event_to_schema_path(aggregate_cls, event_cls):
+def event_to_schema_path(aggregate_cls, event_cls, avro_dir=None):
+    def make_path(version):
+        return _event_to_schema_path(aggregate_cls, event_cls, avro_dir, version)
+
+    avro_dir = avro_dir or get_avro_dir()
+    version = _get_schema_version(event_cls)
+
+    if version:
+        return make_path(version)
+    else:
+        # use 1 as the default version
+        path = make_path(1)
+
+        # look for schemas on disk and choose the one with the highest version
+        for version in itertools.count(2):
+            potential_path = make_path(version)
+            if os.path.exists(potential_path):
+                path = potential_path
+            else:
+                break
+
+        return path
+
+
+def _get_schema_version(event_cls):
+    version = getattr(event_cls, 'schema_version', None)
+
+    if version is None:
+        return None
+    else:
+        try:
+            return int(version)
+        except ValueError:
+            msg = "`{}.schema_version` must be an integer. Currently it is {}."
+            raise EventSchemaError(msg.format(event_cls, event_cls.schema_version))
+
+
+def _event_to_schema_path(aggregate_cls, event_cls, avro_dir, version):
     aggregate_name = decode_cls_name(aggregate_cls)
     event_name = decode_cls_name(event_cls)
-
-    try:
-        version = int(getattr(event_cls, 'schema_version', 1))
-    except ValueError:
-        msg = "`{}.schema_version` must be an integer. Currently it is {}."
-        raise EventSchemaError(msg.format(event_cls, event_cls.schema_version))
 
     filename = "v{version}_{aggregate_name}_{event_name}.json".format(
         aggregate_name=aggregate_name, event_name=event_name, version=version)
 
-    avro_dir = get_avro_dir()
     return os.path.join(avro_dir, aggregate_name, filename)
 
 
