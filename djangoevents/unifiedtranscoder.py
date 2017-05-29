@@ -1,3 +1,4 @@
+from .utils import camel_case_to_snake_case
 from collections import namedtuple
 from datetime import datetime
 from eventsourcing.domain.services.transcoding import AbstractTranscoder
@@ -39,10 +40,10 @@ class UnifiedTranscoder(AbstractTranscoder):
 
         return UnifiedStoredEvent(
             event_id=domain_event.domain_event_id,
-            event_type=domain_event_class.__name__,
+            event_type=get_event_type(domain_event),
             event_data=self._json_encode(event_data),
             aggregate_id=domain_event.entity_id,
-            aggregate_type=self._get_aggregate_type(domain_event),
+            aggregate_type=get_aggregate_type(domain_event),
             aggregate_version=domain_event.entity_version,
             create_date=datetime.fromtimestamp(timestamp_from_uuid(domain_event.domain_event_id)),
             metadata=self._json_encode(getattr(domain_event, 'metadata', None)),
@@ -105,12 +106,6 @@ class UnifiedTranscoder(AbstractTranscoder):
 
         return domain_event_class
 
-    @staticmethod
-    def _get_aggregate_type(domain_event):
-        assert isinstance(domain_event, DomainEvent)
-        domain_event_class = type(domain_event)
-        return domain_event_class.__qualname__.split('.')[0]
-
     def _json_encode(self, data):
         return json.dumps(data, separators=(',', ':'), sort_keys=True, cls=self.json_encoder_cls)
 
@@ -122,3 +117,17 @@ class ResolveDomainFailed(Exception):
     pass
 
 
+def get_aggregate_type(domain_event):
+    assert isinstance(domain_event, DomainEvent)
+    domain_event_class = type(domain_event)
+    return domain_event_class.__qualname__.split('.')[0]
+
+
+def get_event_type(domain_event):
+    if hasattr(domain_event, 'event_type'):
+        return getattr(domain_event, 'event_type')
+    else:
+        aggregate_type = get_aggregate_type(domain_event)
+        event_name = domain_event.__class__.__name__
+        event_type_name = '%s%s' % (aggregate_type, event_name)
+        return camel_case_to_snake_case(event_type_name)

@@ -2,6 +2,7 @@ import inspect
 from .domain import BaseEntity
 from .domain import BaseAggregate
 from .domain import DomainEvent
+import re
 
 
 def list_concrete_aggregates():
@@ -50,3 +51,13 @@ def _list_internal_classes(cls, base_class=None):
             if inspect.isclass(cls_attribute)
             and issubclass(cls_attribute, base_class)]
 
+
+def camel_case_to_snake_case(text):
+
+    def repl(match):
+        sep = match.group().lower()
+        if match.start() > 0:
+            sep = '_%s' % sep
+        return sep
+
+    return re.sub(r'[A-Z][a-z]', repl, text).lower()
