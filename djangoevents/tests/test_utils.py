@@ -71,7 +71,7 @@ def test_list_aggregates_none_present():
         assert aggregates == []
 
 
-def test_list_events_sample_event():
+def test_list_events_sample_event_appart_from_abstract():
     class Aggregate(BaseAggregate):
         class Evt1(DomainEvent):
             def mutate_event(self, *args, **kwargs):
@@ -84,6 +84,11 @@ def test_list_events_sample_event():
         class Evt3(DomainEvent):
             # No mutate_event present
             pass
+
+        @abstract
+        class Evt4(DomainEvent):
+            def mutate_event(self, *args, **kwargs):
+                pass
 
     events = list_aggregate_events(Aggregate)
     assert set(events) == {Aggregate.Evt1, Aggregate.Evt2}
