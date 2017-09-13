@@ -1,4 +1,15 @@
 from setuptools import setup
+from setuptools.command.upload import upload
+import os
+
+
+class ReleaseToPyPICommand(upload):
+
+    def finalize_options(self):
+        self.repository = 'https://upload.pypi.org/legacy/'
+        self.username = os.environ['PYPI_USERNAME']
+        self.password = os.environ['PYPI_PASSWORD']
+
 
 setup(
     name='djangoevents',
@@ -21,4 +32,7 @@ setup(
         'avro-python3==1.7.7',
         'stringcase==1.0.6',
     ],
+    cmdclass={
+        'release_to_pypi': ReleaseToPyPICommand
+    }
 )
