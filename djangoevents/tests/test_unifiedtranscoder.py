@@ -2,6 +2,7 @@ import pytest
 from ..unifiedtranscoder import UnifiedTranscoder
 from eventsourcing.domain.model.entity import EventSourcedEntity
 from django.core.serializers.json import DjangoJSONEncoder
+from django.test.utils import override_settings
 
 
 class SampleAggregate(EventSourcedEntity):
@@ -19,6 +20,7 @@ def test_serialize_and_deserialize_1():
                                       metadata={'command_id': 123})
     created_stored_event = transcoder.serialize(created)
     assert created_stored_event.event_type == 'sample_aggregate_created'
+    assert created_stored_event.event_version == 1
     assert created_stored_event.event_data == '{"attr1":"val1","attr2":"val2"}'
     assert created_stored_event.aggregate_id == 'b089a0a6-e0b3-480d-9382-c47f99103b3d'
     assert created_stored_event.aggregate_version == 0
@@ -40,6 +42,7 @@ def test_serialize_and_deserialize_2():
                                       attr2='val2', metadata={'command_id': 123})
     updated_stored_event = transcoder.serialize(updated)
     assert updated_stored_event.event_type == 'overridden_event_type'
+    assert updated_stored_event.event_version == 1
     assert updated_stored_event.event_data == '{"attr1":"val1","attr2":"val2"}'
     assert updated_stored_event.aggregate_id == 'b089a0a6-e0b3-480d-9382-c47f99103b3d'
     assert updated_stored_event.aggregate_version == 10
@@ -52,6 +55,26 @@ def test_serialize_and_deserialize_2():
     assert 'metadata' not in updated_copy.__dict__
     updated.__dict__.pop('metadata') # metadata is not included in deserialization
     assert updated.__dict__ == updated_copy.__dict__
+
+
+def test_serializer_can_add_event_version_to_data():
+    transcoder = UnifiedTranscoder(json_encoder_cls=DjangoJSONEncoder, adds_event_version_to_data=True)
+    event = SampleAggregate.Created(entity_id='b089a0a6-e0b3-480d-9382-c47f99103b3d', attr1='val1', attr2='val2')
+    serialized_event = transcoder.serialize(event)
+    assert serialized_event.event_data == '{"attr1":"val1","attr2":"val2","schema_version":1}'
+
+
+@override_settings(DJANGOEVENTS_CONFIG={
+    'EVENT_TRANSCODER': {
+        'ADDS_EVENT_VERSION_TO_DATA': True,
+    },
+})
+def test_serializer_adds_event_version_to_data_when_settings_are_correct():
+    transcoder = UnifiedTranscoder(json_encoder_cls=DjangoJSONEncoder)
+    event = SampleAggregate.Created(entity_id='b089a0a6-e0b3-480d-9382-c47f99103b3d', attr1='val1', attr2='val2')
+    serialized_event = transcoder.serialize(event)
+    assert serialized_event.event_data == '{"attr1":"val1","attr2":"val2","schema_version":1}'
+
 
 def test_metadata_is_optional():
     transcoder = UnifiedTranscoder(json_encoder_cls=DjangoJSONEncoder)

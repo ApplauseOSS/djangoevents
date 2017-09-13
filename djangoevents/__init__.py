@@ -1,6 +1,5 @@
 import warnings
 
-from eventsourcing.domain.model.entity import DomainEvent
 from eventsourcing.domain.model.entity import EventSourcedEntity
 from eventsourcing.domain.model.entity import entity_mutator
 from eventsourcing.domain.model.entity import singledispatch
@@ -11,6 +10,7 @@ from eventsourcing.domain.model.events import unsubscribe
 from eventsourcing.infrastructure.event_sourced_repo import EventSourcedRepository
 from .domain import BaseEntity
 from .domain import BaseAggregate
+from .domain import DomainEvent
 from .app import EventSourcingWithDjango
 from .exceptions import EventSchemaError
 from .schema import validate_event

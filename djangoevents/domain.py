@@ -72,4 +72,3 @@ class BaseEntity(BaseAggregate):
     def mutate(cls, entity=None, event=None):
         warnings.warn("`BaseEntity` is depreciated. Please switch to: `BaseAggregate`", DeprecationWarning)
         return super().mutate(aggregate=entity, event=event)
-
