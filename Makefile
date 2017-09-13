@@ -70,3 +70,8 @@ test:
 
 tdd:
 	$(VIRTUAL_ENV)/bin/ptw -c -- ${PROJECT_FOLDER}
+
+release:
+    # Warning: requires setting PYPI_USERNAME and PYPI_PASSWORD environment variables
+    # in order to authenticate to PyPI
+	$(PYTHON) setup.py sdist release_to_pypi
