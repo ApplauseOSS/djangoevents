@@ -35,6 +35,7 @@ def new_stored_event(event_id, event_type, event_data, aggregate_id, aggregate_v
     return UnifiedStoredEvent(
         event_id=event_id,
         event_type=event_type,
+        event_version=1,
         event_data=json.dumps(event_data),
         aggregate_id=aggregate_id,
         aggregate_type='SampleAggregate',

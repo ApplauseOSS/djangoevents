@@ -6,9 +6,9 @@ from eventsourcing.domain.model.entity import EventSourcedEntity
 
 def abstract(cls):
     """
-    Marks an aggregate class as abstract.
+    Marks an aggregate/event class as abstract.
 
-    Abstract aggregate provides (similarly do Django's abstract Models) means to share implementation
+    Abstract aggregate/event provides (similarly do Django's abstract Models) means to share implementation
     details.
     """
     cls._abstract = True
@@ -72,4 +72,3 @@ class BaseEntity(BaseAggregate):
     def mutate(cls, entity=None, event=None):
         warnings.warn("`BaseEntity` is depreciated. Please switch to: `BaseAggregate`", DeprecationWarning)
         return super().mutate(aggregate=entity, event=event)
-

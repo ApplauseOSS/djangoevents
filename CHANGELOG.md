@@ -1,3 +1,12 @@
+0.13.0
+======
+
+- Renamed `Event.schema_version` to `Event.version`.
+- Started setting `Event.version` based on schema file with the highest number.
+- Added event version to stored event envelope under the `event_version` key.
+- Added setting to add event version to event data as well (see "Event version" section in README).
+
+
 0.12.0
 ======
 

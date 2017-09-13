@@ -51,6 +51,7 @@ class DjangoStoredEventRepository(AbstractStoredEventRepository):
             self.EventModel.objects.create(
                 event_id=new_stored_event.event_id,
                 event_type=new_stored_event.event_type,
+                event_version=new_stored_event.event_version,
                 event_data=new_stored_event.event_data,
                 aggregate_id=new_stored_event.aggregate_id,
                 aggregate_type=new_stored_event.aggregate_type,
@@ -104,6 +105,7 @@ def from_model_instance(event):
     return UnifiedStoredEvent(
         event_id=event.event_id,
         event_type=event.event_type,
+        event_version=event.event_version,
         event_data=event.event_data,
         aggregate_id=event.aggregate_id,
         aggregate_type=event.aggregate_type,

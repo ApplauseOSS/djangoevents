@@ -1,27 +1,47 @@
+from . import settings
+from .domain import DomainEvent
+from .schema import get_event_version
 from .utils import camel_case_to_snake_case
 from collections import namedtuple
 from datetime import datetime
+from eventsourcing.domain.model.events import resolve_attr
 from eventsourcing.domain.services.transcoding import AbstractTranscoder
 from eventsourcing.domain.services.transcoding import ObjectJSONDecoder
 from eventsourcing.domain.services.transcoding import id_prefix_from_event
 from eventsourcing.domain.services.transcoding import make_stored_entity_id
-from eventsourcing.domain.model.events import DomainEvent
-from eventsourcing.domain.model.events import resolve_attr
 from eventsourcing.utils.time import timestamp_from_uuid
-import importlib
 from inspect import isclass
+
+import importlib
 import json
 
-UnifiedStoredEvent = namedtuple('StoredEvent',
-                                ['event_id', 'event_type', 'event_data', 'aggregate_id', 'aggregate_type',
-                                 'aggregate_version', 'create_date', 'metadata', 'module_name', 'class_name',
-                                 'stored_entity_id'])
+
+UnifiedStoredEvent = namedtuple('UnifiedStoredEvent', [
+    'event_id',
+    'event_type',
+    'event_version',
+    'event_data',
+    'aggregate_id',
+    'aggregate_type',
+    'aggregate_version',
+    'create_date',
+    'metadata',
+    'module_name',
+    'class_name',
+    'stored_entity_id',
+])
 
 
 class UnifiedTranscoder(AbstractTranscoder):
-    def __init__(self, json_encoder_cls=None):
+    def __init__(self, json_encoder_cls=None, adds_event_version_to_data=None):
         self.json_encoder_cls = json_encoder_cls
         # encrypt not implemented
+
+        # get default from settings
+        if adds_event_version_to_data is None:
+            adds_event_version_to_data = settings.transcoder_adds_event_version_to_data()
+
+        self.adds_event_version_to_data = adds_event_version_to_data
 
     def serialize(self, domain_event):
         """
@@ -36,11 +56,16 @@ class UnifiedTranscoder(AbstractTranscoder):
             'metadata',
         }}
 
+        event_version = get_event_version(domain_event.__class__)
+        if self.adds_event_version_to_data:
+            event_data['schema_version'] = event_version
+
         domain_event_class = type(domain_event)
 
         return UnifiedStoredEvent(
             event_id=domain_event.domain_event_id,
             event_type=get_event_type(domain_event),
+            event_version=event_version,
             event_data=self._json_encode(event_data),
             aggregate_id=domain_event.entity_id,
             aggregate_type=get_aggregate_type(domain_event),

@@ -1,5 +1,9 @@
 from ..domain import BaseEntity, DomainEvent
+from ..schema import get_event_version
+from ..schema import set_event_version
+from django.test import override_settings
 
+import os
 import pytest
 
 
@@ -53,3 +57,25 @@ def test_create_for_event():
 
     assert obj.id == 'ENTITY_ID'
     assert obj.version == 0
+
+
+@override_settings(BASE_DIR='/path/to/proj/src/')
+def test_version_1():
+    assert get_event_version(SampleEntity.Created) == 1
+
+
+def test_version_4(tmpdir):
+    # make temporary directory structure
+    avro_dir = tmpdir.mkdir('avro_dir')
+    entity_dir = avro_dir.mkdir('sample_entity')
+
+    for version in range(1, 4):
+        # make empty schema file
+        expected_schema_path = os.path.join(entity_dir.strpath, 'v{}_sample_entity_created.json'.format(version))
+        with open(expected_schema_path, 'w'):
+            pass
+
+        # refresh version
+        set_event_version(SampleEntity, SampleEntity.Created, avro_dir=avro_dir.strpath)
+
+        assert get_event_version(SampleEntity.Created) == version
