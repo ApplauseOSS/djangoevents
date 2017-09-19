@@ -1,3 +1,15 @@
+0.13.1
+======
+
+- Switched to adding `schema_version` to event objects themselves
+  instead of just transcoded events. This way events will pass
+  validation if their Avro schemas require `schema_version`.
+
+- Renamed setting responsible for the above feature
+  from `EVENT_TRANSCODER.ADDS_EVENT_VERSION_TO_DATA`
+  to `ADDS_SCHEMA_VERSION_TO_EVENT_DATA`.
+
+
 0.13.0
 ======
 

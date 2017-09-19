@@ -217,9 +217,7 @@ For compatibility with some systems, we provide an option to add event version t
 ```python
 DJANGOEVENTS_CONFIG = {
     ...
-    'EVENT_TRANSCODER': {
-        'ADDS_EVENT_VERSION_TO_DATA': True,
-    },
+    'ADDS_SCHEMA_VERSION_TO_EVENT_DATA': True,
     ...
 }
 ```
