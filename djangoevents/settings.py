@@ -8,9 +8,7 @@ _DEFAULTS = {
         'ENABLED': False,
         'SCHEMA_DIR': 'avro',
     },
-    'EVENT_TRANSCODER': {
-        'ADDS_EVENT_VERSION_TO_DATA': False,
-    },
+    'ADDS_SCHEMA_VERSION_TO_EVENT_DATA': False,
 }
 
 
@@ -39,6 +37,6 @@ def get_avro_dir():
     return avro_dir
 
 
-def transcoder_adds_event_version_to_data():
+def adds_schema_version_to_event_data():
     config = get_config()
-    return config.get('EVENT_TRANSCODER', {}).get('ADDS_EVENT_VERSION_TO_DATA', False)
+    return config.get('ADDS_SCHEMA_VERSION_TO_EVENT_DATA', False)
