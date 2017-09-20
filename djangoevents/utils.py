@@ -2,6 +2,7 @@ import inspect
 from .domain import BaseEntity
 from .domain import BaseAggregate
 from .domain import DomainEvent
+from djangoevents.utils_abstract import is_abstract
 import re
 
 
@@ -11,10 +12,6 @@ def list_concrete_aggregates():
     """
     aggregates = set(_list_subclasses(BaseAggregate) + _list_subclasses(BaseEntity))
     return [aggregate for aggregate in aggregates if not aggregate.is_abstract_class()]
-
-
-def is_event_abstract(event):
-    return getattr(event, "_abstract", False)
 
 
 def is_event_mutating(event):
@@ -27,7 +24,7 @@ def list_aggregate_events(aggregate_cls):
     Note: Only events with a defined `mutate_event` flow and are not marked as abstract will be returned.
     """
     events = _list_internal_classes(aggregate_cls, DomainEvent)
-    return [event_cls for event_cls in events if is_event_mutating(event_cls) and not is_event_abstract(event_cls)]
+    return [event_cls for event_cls in events if is_event_mutating(event_cls) and not is_abstract(event_cls)]
 
 
 def event_to_json(event):

@@ -1,3 +1,11 @@
+0.13.2
+======
+
+- Made `@abstract` non inheritable: now only classes explicitly marked
+  with the `@abstract` decorator are abstract. Their subclasses are not.
+  This was always the intended behavior.
+
+
 0.13.1
 ======
 
