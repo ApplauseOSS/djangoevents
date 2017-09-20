@@ -1,20 +1,12 @@
 import warnings
 
+from djangoevents.utils_abstract import abstract
+from djangoevents.utils_abstract import is_abstract
 from eventsourcing.domain.model.entity import DomainEvent
 from eventsourcing.domain.model.entity import EventSourcedEntity
 
 
-def abstract(cls):
-    """
-    Marks an aggregate/event class as abstract.
-
-    Abstract aggregate/event provides (similarly do Django's abstract Models) means to share implementation
-    details.
-    """
-    cls._abstract = True
-    return cls
-
-
+@abstract
 class BaseAggregate(EventSourcedEntity):
     """
     `EventSourcedEntity` with saner mutator routing & naming:
@@ -29,11 +21,10 @@ class BaseAggregate(EventSourcedEntity):
     >>>            instance.connect = True
     >>>            return instance
     """
-    _abstract = False
 
     @classmethod
     def is_abstract_class(cls):
-        return cls._abstract or cls is BaseAggregate
+        return is_abstract(cls)
 
     @classmethod
     def mutate(cls, aggregate=None, event=None):

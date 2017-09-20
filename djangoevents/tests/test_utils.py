@@ -1,6 +1,6 @@
 from djangoevents.domain import BaseAggregate
 from djangoevents.domain import DomainEvent
-from djangoevents.domain import abstract
+from djangoevents.utils_abstract import abstract
 from ..utils import camel_case_to_snake_case
 from ..utils import list_aggregate_events
 from ..utils import list_concrete_aggregates
