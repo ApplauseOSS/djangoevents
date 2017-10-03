@@ -1,3 +1,9 @@
+0.13.3dev
+======
+
+- Stopped overriding `schema_version` if it exists.
+
+
 0.13.2
 ======
 
