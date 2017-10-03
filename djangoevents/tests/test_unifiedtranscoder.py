@@ -3,6 +3,7 @@ from ..unifiedtranscoder import UnifiedTranscoder
 from eventsourcing.domain.model.entity import EventSourcedEntity
 from django.core.serializers.json import DjangoJSONEncoder
 from django.test.utils import override_settings
+from unittest import mock
 
 
 class SampleAggregate(EventSourcedEntity):
@@ -85,3 +86,30 @@ def test_metadata_is_optional():
         transcoder.serialize(created)
     except AttributeError:
         pytest.fail('Serialization of an event without metadata should not raise an exception.')
+
+
+def test_transcoder_passes_all_attributes_to_event_constructor():
+    attributes = {
+        'entity_id': 'b089a0a6-e0b3-480d-9382-c47f99103b3d',
+        'foo': 0,
+        'bar': 1,
+    }
+
+    event = SampleAggregate.Created(**attributes)
+    transcoder = UnifiedTranscoder(json_encoder_cls=DjangoJSONEncoder)
+    serialized_event = transcoder.serialize(event)
+
+    init_call_args = None
+    def init(self, *args, **kwargs):
+        nonlocal init_call_args
+        init_call_args = (args, kwargs)
+
+    with mock.patch.object(SampleAggregate.Created, '__init__', init):
+        transcoder.deserialize(serialized_event)
+
+    args, kwargs = init_call_args
+    assert args == tuple()
+
+    for key, value in attributes.items():
+        assert key in kwargs
+        assert kwargs[key] == value

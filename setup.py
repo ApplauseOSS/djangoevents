@@ -13,7 +13,7 @@ class ReleaseToPyPICommand(upload):
 
 setup(
     name='djangoevents',
-    version='0.13.3dev',
+    version='0.13.3',
     url='https://github.com/ApplauseOSS/djangoevents',
     license='MIT',
     description='Building blocks for building Event Sourcing Django applications.',

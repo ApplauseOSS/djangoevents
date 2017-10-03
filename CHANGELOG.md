@@ -1,7 +1,11 @@
-0.13.3dev
+0.13.3
 ======
 
 - Stopped overriding `schema_version` if it exists.
+- Started passing all event attributes to event constructor during
+  deserialization. This allows to handle event structure migration
+  ("upcasting") in each event's constructor: one can modify `kwargs`
+  before calling `super().__init__`.
 
 
 0.13.2

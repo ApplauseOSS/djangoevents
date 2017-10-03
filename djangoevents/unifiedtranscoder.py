@@ -83,8 +83,8 @@ class UnifiedTranscoder(AbstractTranscoder):
         try:
             domain_event = domain_event_class(entity_id=stored_event.aggregate_id,
                                               entity_version=stored_event.aggregate_version,
-                                              domain_event_id=stored_event.event_id)  # metadata is not needed
-            domain_event.__dict__.update(event_attrs)
+                                              domain_event_id=stored_event.event_id,
+                                              **event_attrs)
         except TypeError:
             raise ValueError("Unable to instantiate class '{}' with data '{}'"
                              "".format(stored_event.class_name, event_attrs))
