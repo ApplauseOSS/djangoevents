@@ -1,6 +1,8 @@
 from ..domain import BaseEntity, DomainEvent
 from ..schema import get_event_version
 from ..schema import set_event_version
+from ..unifiedtranscoder import UnifiedTranscoder
+from django.core.serializers.json import DjangoJSONEncoder
 from django.test import override_settings
 from unittest import mock
 
@@ -106,7 +108,32 @@ def test_events_have_schema_version_when_enabled():
     'ADDS_SCHEMA_VERSION_TO_EVENT_DATA': True,
 })
 def test_events_have_correct_schema_version():
-
     with mock.patch.object(SampleEntity.Created, 'version', 666):
         event = SampleEntity.Created(entity_id=1)
         assert event.schema_version == 666
+
+
+@override_settings(DJANGOEVENTS_CONFIG={
+    'ADDS_SCHEMA_VERSION_TO_EVENT_DATA': True,
+})
+def test_explicitly_provided_schema_version_is_not_overridden():
+    with mock.patch.object(SampleEntity.Created, 'version', 2):
+        event = SampleEntity.Created(entity_id=1, schema_version=3)
+        assert event.schema_version == 3
+
+
+@override_settings(DJANGOEVENTS_CONFIG={
+    'ADDS_SCHEMA_VERSION_TO_EVENT_DATA': True,
+})
+def test_schema_version_is_not_overridden_when_serialized_and_deserialized():
+    transcoder = UnifiedTranscoder(json_encoder_cls=DjangoJSONEncoder)
+
+    with mock.patch.object(SampleEntity.Created, 'version', 2):
+        event = SampleEntity.Created(entity_id=1)
+
+    stored_event = transcoder.serialize(event)
+
+    with mock.patch.object(SampleEntity.Created, 'version', 3):
+        entity = transcoder.deserialize(stored_event)
+
+    assert entity.schema_version == 2

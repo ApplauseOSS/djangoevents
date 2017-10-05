@@ -75,6 +75,9 @@ def patch_domain_event():
         old_init(self, *args, **kwargs)
 
         if adds_schema_version_to_event_data():
-            self.__dict__['schema_version'] = get_event_version(self.__class__)
+            dct = self.__dict__
+            key = 'schema_version'
+            if key not in dct:
+                dct[key] = get_event_version(self.__class__)
 
     DomainEvent.__init__ = new_init
