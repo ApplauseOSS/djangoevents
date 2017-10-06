@@ -1,3 +1,10 @@
+0.13.4
+======
+
+- Switched to `schema_version = None` default when deserializing
+  events without `schema_version`.
+
+
 0.13.3
 ======
 
