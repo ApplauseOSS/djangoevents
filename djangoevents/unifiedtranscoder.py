@@ -1,5 +1,6 @@
 from .domain import DomainEvent
 from .schema import get_event_version
+from .settings import adds_schema_version_to_event_data
 from .utils import camel_case_to_snake_case
 from collections import namedtuple
 from datetime import datetime
@@ -80,11 +81,19 @@ class UnifiedTranscoder(AbstractTranscoder):
         event_attrs = self._json_decode(stored_event.event_data)
 
         # Reinstantiate and return the domain event object.
+        defaults = {
+            'entity_id': stored_event.aggregate_id,
+            'entity_version': stored_event.aggregate_version,
+            'domain_event_id': stored_event.event_id,
+        }
+
+        if adds_schema_version_to_event_data():
+            defaults['schema_version'] = None
+
+        kwargs = {**defaults, **event_attrs}
+
         try:
-            domain_event = domain_event_class(entity_id=stored_event.aggregate_id,
-                                              entity_version=stored_event.aggregate_version,
-                                              domain_event_id=stored_event.event_id,
-                                              **event_attrs)
+            domain_event = domain_event_class(**kwargs)
         except TypeError:
             raise ValueError("Unable to instantiate class '{}' with data '{}'"
                              "".format(stored_event.class_name, event_attrs))
