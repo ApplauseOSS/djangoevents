@@ -13,7 +13,7 @@ class Event(models.Model):
     metadata = models.TextField()
     module_name = models.CharField(max_length=255, db_column='_module_name')
     class_name = models.CharField(max_length=255, db_column='_class_name')
-    stored_entity_id = models.CharField(max_length=255, db_column='_stored_entity_id')
+    stored_entity_id = models.CharField(max_length=255, db_column='_stored_entity_id', db_index=True)
 
     class Meta:
         unique_together = (("aggregate_id", "aggregate_type", "aggregate_version"),)
