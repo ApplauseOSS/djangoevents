@@ -1,3 +1,11 @@
+0.14.0
+======
+
+- Added index on the `stored_entity_id` field which fixes performance
+  issue when there are many events. It requires migration, version
+  change reflects that.
+
+
 0.13.4
 ======
 
