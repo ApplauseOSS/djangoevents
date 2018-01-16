@@ -1,3 +1,10 @@
+0.14.1
+======
+
+- Change the way modules are autodiscovered (use Django utility).
+  It should work now with new style apps.
+
+
 0.14.0
 ======
 
